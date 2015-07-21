@@ -161,9 +161,11 @@ function tickDelegate(e) {
 	h_l = snake_l.getHead();
 	h_r = snake_r.getHead();
 	
-	if(snake_l.isColliding(h_r)){alert("Player Left won!");cleanup();};
-	if(snake_r.isColliding(h_l)){alert("Player Right won!");cleanup();};
-	
+	if(snake_l.isColliding(h_r)){alert("Player Left won!");cleanup();}
+	if(snake_r.isColliding(h_l)){alert("Player Right won!");cleanup();}
+	if(h_l.x < 0 || h_l.y < 0 || h_l.x > WINDOW_SIZE || h_l.y > WINDOW_SIZE){alert("Player Left won! Don’t hit things");cleanup();} 
+	if(h_r.x < 0 || h_r.y < 0 || h_r.x > WINDOW_SIZE || h_r.y > WINDOW_SIZE){alert("Player Right won! LOL");cleanup();} 
+
 	for(var i = 0; i < food.numChildren;i++) {
 		var cur = food.getChildAt(i);
 		if(h_l.x == cur.x && h_l.y == cur.y) {
