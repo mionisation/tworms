@@ -4,29 +4,6 @@
  */
 
 /*
-KEYMAPPINGS
-TODO: make all-browser compatible
-*/
-var KEY_LEFT = 37;
-var KEY_UP = 38;
-var KEY_DOWN = 40;
-var KEY_RIGHT = 39;
-var KEY_W = 87;
-var KEY_A = 65;
-var KEY_S = 83;
-var KEY_D = 68;
-
-//temporary create new block
-var KEY_New = 78;
-var KEY_Temp1 = 85;
-var KEY_Temp2 = 73;
-var KEY_Temp3 = 79;
-var KEY_Temp4 = 80;
-
-//check if key was pressed this frame
-var KEY_PRESSED = false;
-
-/*
 WINDOW MEASUREMENTS
 */
 //resize gaming window
@@ -37,149 +14,111 @@ var canvas;
 var blockLength;
 var snSpeed;
 
-var direction = [];
-var food;
+/*
+FRAMERATE SETTINGS
+*/
 
 var bpm = 360;
 var fps = bpm / 60;;
 
-var stage;
-var head;
+/*
+CREATEJS VARS
+*/
 
-var snake;
+var stage;
+
+/*
+???
+*/
+var food = new createjs.Container();
+
+/*
+SCORES
+*/
+var score_l = 0;
+var score_r = 0;
+
+var score_l_text = new createjs.Text("LEFT: 0", "20px Arial", "#ff7700");
+var score_r_text = new createjs.Text("RIGHT: 0", "20px Arial", "#ff7700");
+
+/*****************
+SNAKE INFORMATIONS BEGIN
+******************/
 
 /*
  COLORING
  */
 
-var body_c;
-var head_c;
-var back_c;
-var food_c;
+var body_c_l = "#7FF" , head_c_l = "#7FF";
+var body_c_r = "#800", head_c_r = "#800";
 
-function addBodypart() {
-    var body = new createjs.Shape();
-    body.graphics.beginFill("#FFE21C").rect(0, 0, blockLength, blockLength);
+var back_c = "#80C";
+var food_c = "#8F0";
 
-	//init body parts on coords of last member
-	var lastMember = snake.getChildAt((snake.numChildren-1));
-	body.x = lastMember.x;
-	body.y= lastMember.y;
-	
-	//init direction of previous body part
-	direction[snake.numChildren] = direction[snake.numChildren-1];
-    snake.addChild(body);
-}
+/*
+START POSITIONS
+*/
+var start_l;
+var start_r;
 
-function removeBodypart() {}
+/*
+KEYMAPPINGS
+TODO: make all-browser compatible
+*/
+var KEY_UP = 38, KEY_LEFT = 37, KEY_DOWN = 40, KEY_RIGHT = 39;
+var KEY_W = 87, KEY_A = 65, KEY_S = 83, KEY_D = 68;
 
-function keydownhandler(e) {
-    //only register a pressed key ONCE per frame
-	if(KEY_PRESSED) {
-		return;
-	}
-	KEY_PRESSED = true;
-	
-	switch (e.keyCode) {
-        case KEY_LEFT:
-        case KEY_A:
-			if(direction[0] != "right") {
-				direction[0] = "left";	
-			}
-            break;
-        case KEY_RIGHT:
-        case KEY_D:
-			if(direction[0] != "left") {
-				direction[0] = "right";
-			}
-            break;
-        case KEY_UP:
-        case KEY_W:
-			if(direction[0] != "down") {
-				direction[0] = "up";
-			}
-            break;
-        case KEY_DOWN:
-        case KEY_S:
-			if(direction[0] != "up") {
-				direction[0] = "down";
-			}
-            break;
-        case KEY_New:
-            addBodypart();
-            break;
-        case KEY_Temp1:
-            alert(snake.numChildren);
-            break;
-        case KEY_Temp2:
-            alert();
-            break;
-        case KEY_Temp3:
-            alert();
-            break;
-        case KEY_Temp4:
-            alert();
-            break;
-    }
-}
+//temporary keys
+var KEY_New = 78;
+var KEY_Temp1 = 85;
+var KEY_Temp2 = 73;
+var KEY_Temp3 = 79;
+var KEY_Temp4 = 80;
+
+/*
+SNAKE OBJECTS
+*/
+var snakeInfos_l;
+var snakeInfos_r;
+
+
+/*****************
+SNAKE INFORMATIONS END
+******************/
 
 function addFood() {
-	food = new createjs.Shape();
-	food.graphics.beginFill("#FFE21C").rect(0, 0, blockLength, blockLength);
-	food.x = Math.floor(blockLength*(Math.floor(20*Math.random())));
-	food.y = Math.floor(blockLength*(Math.floor(20*Math.random())));
-	
-	stage.addChild(food);
-}
-
-function tickHandler(event) {
-	
-	var oldPositions = [];
-	for (var i = 0; i < snake.numChildren; i++) {
-		oldPositions[i] = [snake.getChildAt(i).x, snake.getChildAt(i).y];
-	}
-	
-	//set direction of head
-	switch(direction[0]) {
-		case "left":
-			head.x -= snSpeed;
-		break;
-		case "right":
-			head.x += snSpeed;
-		break;
-		case "up":
-			head.y -= snSpeed;
-		break;
-		case "down":
-			head.y += snSpeed;
-		break;	
-	}
-	
-	for(var i = 1; i < snake.numChildren; i++) {
-		var cur = snake.getChildAt(i);
-		cur.x = oldPositions[i-1][0];
-		cur.y = oldPositions[i-1][1];
-	}
-
-	if(head.x == food.x && head.y == food.y) {
-		stage.removeChild(food);
-		addFood();
-		addBodypart();
-	}
-	
-	stage.update();
-	KEY_PRESSED = false;
+	var f = new createjs.Shape();
+	f.graphics.beginFill("#FFE21C").rect(0, 0, blockLength, blockLength);
+	f.x = Math.floor(blockLength*(Math.floor(20*Math.random())));
+	f.y = Math.floor(blockLength*(Math.floor(20*Math.random())));
+	food.addChild(f);
 }
 
 function initCreateJs() {
 	
 	//set framerate
 	createjs.Ticker.framerate = fps;
-	//fire listener each tick
-	createjs.Ticker.addEventListener("tick", tickHandler);
+
 	stage = new createjs.Stage("game");
+	 
 	
-	
+}
+
+function initSnakeVariables() {
+	start_l = [5*blockLength, 10*blockLength];
+	start_r = [20*blockLength, 10*blockLength];
+
+	snakeInfos_l = {
+		"keys": [KEY_W, KEY_A, KEY_S, KEY_D],
+		"colors": [body_c_l, head_c_l],
+		"position": [start_l[0], start_l[1]]
+	};
+
+	snakeInfos_r = {
+		"keys": [KEY_UP, KEY_LEFT, KEY_DOWN, KEY_RIGHT],
+		"colors": [body_c_r, head_c_r],
+		"position": [start_r[0], start_r[1]]
+	};
 }
 
 function initSize() {
@@ -200,7 +139,7 @@ function initSize() {
 	need space between block to make it look cooler
 	*/
 	
-	blockLength = Math.floor(WINDOW_SIZE / 20);
+	blockLength = Math.floor(WINDOW_SIZE / 25);
 	snSpeed = blockLength;
 	
 	/*TODO:
@@ -209,24 +148,70 @@ function initSize() {
 	
 }
 
-function start() {
+function keydownDelegate(e) {
+	snake_l.keydownhandler(e);
+	snake_r.keydownhandler(e);
+}
+
+function tickDelegate(e) {
+	snake_l.tickHandler(e);
+	snake_r.tickHandler(e);
 	
+	//TODO add snakes themselves in some container :O
+	h_l = snake_l.getHead();
+	h_r = snake_r.getHead();
+	
+	if(snake_l.isColliding(h_r)){alert("Player Left won!");cleanup();};
+	if(snake_r.isColliding(h_l)){alert("Player Right won!");cleanup();};
+	
+	for(var i = 0; i < food.numChildren;i++) {
+		var cur = food.getChildAt(i);
+		if(h_l.x == cur.x && h_l.y == cur.y) {
+			food.removeChild(cur);
+			addFood();
+			snake_l.addBodypart();
+			score_l++;
+			score_l_text.text = "LEFT: " + score_l;
+		}
+		else if(h_r.x == cur.x && h_r.y == cur.y) {
+			food.removeChild(cur);
+			addFood();
+			snake_r.addBodypart();
+			score_r++;
+			score_r_text.text = "RIGHT: " + score_r;
+		}		
+	}
+	
+	stage.update();
+}
+
+function start() {
 	initSize();
 	initCreateJs();
-	initSnake(keys, color, container);
-	initSnake(keys, color, container);
 	
-	//add to Snake Function
-	window.addEventListener("keydown", keydownhandler, false);
+	initSnakeVariables();
 	
-	head = new createjs.Shape();
-	head.graphics.beginFill("#FFE458").rect(0, 0, blockLength, blockLength);
-	head.x = 10*blockLength;
-	head.y = 10*blockLength;
+	snake_l = new Snake(snakeInfos_l);
+	snake_r = new Snake(snakeInfos_r);
 	
-	snake = new createjs.Container();
-	stage.addChild(snake);
-	snake.addChild(head);
+	stage.addChild(snake_l.container);
+	stage.addChild(snake_r.container);
+	stage.addChild(food);
+	
+	score_r_text.x = 250;
+	stage.addChild(score_l_text);
+	stage.addChild(score_r_text);
+	
+	//fire listener each tick
+	createjs.Ticker.addEventListener("tick", tickDelegate);
+	window.addEventListener("keydown", keydownDelegate, false);
+	
 	addFood();
-
+	addFood();
 }
+
+//TODO
+function cleanup() {
+	stage.removeAllChildren();
+	start();
+};

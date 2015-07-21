@@ -3,113 +3,116 @@
  * @email michael.antonius.ion@gmail.com
  */
 
-/*
-KEYMAPPINGS
-TODO: make all-browser compatible
-*/
-var KEY_LEFT = 37;
-var KEY_UP = 38;
-var KEY_DOWN = 40;
-var KEY_RIGHT = 39;
-var KEY_W = 87;
-var KEY_A = 65;
-var KEY_S = 83;
-var KEY_D = 68;
-
-//temporary create new block
-var KEY_New = 78;
-var KEY_Temp1 = 85;
-var KEY_Temp2 = 73;
-var KEY_Temp3 = 79;
-var KEY_Temp4 = 80;
-
-//check if key was pressed this frame
-var KEY_PRESSED = false;
-
-/*
-WINDOW MEASUREMENTS
-*/
-//resize gaming window
-
-var WINDOW_SIZE;
-var canvas;
-
-var blockLength;
-var snSpeed;
-
-var direction;
-var food;
-
-var bpm = 360;
-var fps = bpm / 60;;
-
-var stage;
-var head;
-
-var snake;
-
-/*
- COLORING
- */
-
-var body_c;
-var head_c;
-var back_c;
-var food_c;
-
-function addBodypart() {
-    var body = new createjs.Shape();
-    body.graphics.beginFill("#FFE21C").rect(0, 0, blockLength, blockLength);
-
-	//init body parts on coords of last member
-	var lastMember = snake.getChildAt((snake.numChildren-1));
-	body.x = lastMember.x;
-	body.y= lastMember.y;
+function Snake(args) {
+	this.direction = [];
+	this.container = new createjs.Container();
+	this.keys = args.keys;
+	this.colors = args.colors;
+	//check if key was pressed this frame
+	var h = new createjs.Shape();
+	h.graphics.beginFill(this.colors[1]).rect(0, 0, blockLength, blockLength);
+	h.x = args.position[0];
+	h.y = args.position[1];
 	
-	//init direction of previous body part
-	direction[snake.numChildren] = direction[snake.numChildren-1];
-    snake.addChild(body);
+	this.container.addChild(h);
+	
 }
 
-function removeBodypart() {}
+Snake.prototype.addBodypart = function() {
+	//create new block for body part
+	var body = new createjs.Shape();
+    body.graphics.beginFill(this.colors[0]).rect(0, 0, blockLength, blockLength);
 
-function keydownhandler(e) {
-    //only register a pressed key ONCE per frame
-	if(KEY_PRESSED) {
-		return;
-	}
-	KEY_PRESSED = true;
+	//init body parts on coords of last member
+	var numCh = this.container.numChildren;
+	var lastMember = this.container.getChildAt((numCh-1));
+	body.x = lastMember.x;
+	body.y = lastMember.y;
 	
+	//init direction of previous body part
+	this.direction[numCh] = this.direction[numCh-1];
+    this.container.addChild(body);
+};
+
+Snake.prototype.removeBodypart = function() {};
+
+Snake.prototype.tickHandler = function(event) {
+	var oldPositions = [];
+	var numCh = this.container.numChildren;
+	var t = this.container;
+	
+	for (var i = 0; i < numCh; i++) {
+		oldPositions[i] = [t.getChildAt(i).x, t.getChildAt(i).y];
+	}
+	
+	var h = this.getHead();
+	//set direction of head h
+	switch(this.direction[0]) {
+		case "left":
+			h.x -= snSpeed;
+		break;
+		case "right":
+			h.x += snSpeed;
+		break;
+		case "up":
+			h.y -= snSpeed;
+		break;
+		case "down":
+			h.y += snSpeed;
+		break;	
+	}
+	
+	for(var i = 1; i < numCh; i++) {
+		var cur = t.getChildAt(i);
+		cur.x = oldPositions[i-1][0];
+		cur.y = oldPositions[i-1][1];
+	}
+};
+
+Snake.prototype.getHead = function() {
+	return this.container.getChildAt(0);
+}
+
+Snake.prototype.isColliding = function(shape) {
+	for(var i = 0; i<this.container.numChildren; i++) {
+		var cur = this.container.getChildAt(i);
+		if(shape.x == cur.x && shape.y == cur.y) {return true;}
+	}
+	return false;
+}
+
+Snake.prototype.keydownhandler = function(e) {
+    //TODO only register a pressed key ONCE per frame
 	switch (e.keyCode) {
-        case KEY_LEFT:
-        case KEY_A:
-			if(direction[0] != "right") {
-				direction[0] = "left";	
+		//press left key
+        case this.keys[1]:
+			if(this.direction[0] != "right") {
+				this.direction[0] = "left";	
 			}
             break;
-        case KEY_RIGHT:
-        case KEY_D:
-			if(direction[0] != "left") {
-				direction[0] = "right";
+        //press right key
+		case this.keys[3]:
+			if(this.direction[0] != "left") {
+				this.direction[0] = "right";
 			}
             break;
-        case KEY_UP:
-        case KEY_W:
-			if(direction[0] != "down") {
-				direction[0] = "up";
+		//press up key
+        case this.keys[0]:
+			if(this.direction[0] != "down") {
+				this.direction[0] = "up";
 			}
             break;
-        case KEY_DOWN:
-        case KEY_S:
-			if(direction[0] != "up") {
-				direction[0] = "down";
+        //press down key
+		case this.keys[2]:
+			if(this.direction[0] != "up") {
+				this.direction[0] = "down";
 			}
             break;
         case KEY_New:
-            addBodypart();
+            this.addBodypart();
             break;
         case KEY_Temp1:
-            alert(snake.numChildren);
+            alert(this.container.numChildren);
             break;
         case KEY_Temp2:
             alert();
@@ -121,102 +124,4 @@ function keydownhandler(e) {
             alert();
             break;
     }
-}
-
-function addFood() {
-	food = new createjs.Shape();
-	food.graphics.beginFill("#FFE21C").rect(0, 0, blockLength, blockLength);
-	food.x = Math.floor(blockLength*(Math.floor(20*Math.random())));
-	food.y = Math.floor(blockLength*(Math.floor(20*Math.random())));
-	
-	stage.addChild(food);
-}
-
-function tickHandler(event) {
-	
-	var oldPositions = [];
-	for (var i = 0; i < snake.numChildren; i++) {
-		oldPositions[i] = [snake.getChildAt(i).x, snake.getChildAt(i).y];
-	}
-	
-	//set direction of head
-	switch(direction[0]) {
-		case "left":
-			head.x -= snSpeed;
-		break;
-		case "right":
-			head.x += snSpeed;
-		break;
-		case "up":
-			head.y -= snSpeed;
-		break;
-		case "down":
-			head.y += snSpeed;
-		break;	
-	}
-	
-	for(var i = 1; i < snake.numChildren; i++) {
-		var cur = snake.getChildAt(i);
-		cur.x = oldPositions[i-1][0];
-		cur.y = oldPositions[i-1][1];
-	}
-
-	if(head.x == food.x && head.y == food.y) {
-		stage.removeChild(food);
-		addFood();
-		addBodypart();
-	}
-	
-	stage.update();
-	KEY_PRESSED = false;
-}
-
-function start() {
-	canvas = document.getElementById("game");
-	canvas.style.left = "500px";
-	WINDOW_SIZE = canvas.height = window.innerHeight;
-	canvas.width = WINDOW_SIZE;
-	
-	//TODO: handle case of window height > window width
-	if(window.innerWidth < WINDOW_SIZE) {
-		alert("Please resize your window so that the width is larger than the height and refresh");
-	}
-	
-	/*
-	GAME MEASUREMENTS
-	
-	TODO: make some adjustements
-	need space between block to make it look cooler
-	*/
-	
-	blockLength = Math.floor(WINDOW_SIZE / 20);
-	snSpeed = blockLength;
-	
-	/*TODO:
-	- make ALL THE THINGS resizable 
-	*/
-	
-	direction = [];
-
-	createjs.Ticker.framerate = fps;
-	createjs.Ticker.addEventListener("tick", tickHandler);
-	
-	window.addEventListener("keydown", keydownhandler, false);
-	
-	stage = new createjs.Stage("game");
-	
-	head = new createjs.Shape();
-	head.graphics.beginFill("#FFE458").rect(0, 0, blockLength, blockLength);
-	head.x = 10*blockLength;
-	head.y = 10*blockLength;
-	
-	snake = new createjs.Container();
-	stage.addChild(snake);
-	snake.addChild(head);
-	addFood();
-
-}
-
-function initSnake() {
-	
-}
+};
