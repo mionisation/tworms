@@ -30,6 +30,7 @@ var stage;
 /*
 ???
 */
+
 var food = new createjs.Container();
 
 /*
@@ -52,9 +53,8 @@ SNAKE INFORMATIONS BEGIN
 var body_c_l = "#7FF" , head_c_l = "#7FF";
 var body_c_r = "#800", head_c_r = "#800";
 
-var back_c = "#80C";
+var back_c = "#FFF9D5";
 var food_c = "#8F0";
-
 /*
 START POSITIONS
 */
@@ -98,7 +98,6 @@ function initCreateJs() {
 	
 	//set framerate
 	createjs.Ticker.framerate = fps;
-
 	stage = new createjs.Stage("game");
 	 
 	
@@ -111,19 +110,21 @@ function initSnakeVariables() {
 	snakeInfos_l = {
 		"keys": [KEY_W, KEY_A, KEY_S, KEY_D],
 		"colors": [body_c_l, head_c_l],
-		"position": [start_l[0], start_l[1]]
+		"position": [start_l[0], start_l[1]],
+		"size":3
 	};
 
 	snakeInfos_r = {
 		"keys": [KEY_UP, KEY_LEFT, KEY_DOWN, KEY_RIGHT],
 		"colors": [body_c_r, head_c_r],
-		"position": [start_r[0], start_r[1]]
+		"position": [start_r[0], start_r[1]],
+		"size":3
 	};
 }
 
 function initSize() {
 	canvas = document.getElementById("game");
-	canvas.style.left = "500px";
+	canvas.style.backgroundColor = back_c;
 	WINDOW_SIZE = canvas.height = window.innerHeight;
 	canvas.width = WINDOW_SIZE;
 	
@@ -160,9 +161,15 @@ function tickDelegate(e) {
 	//TODO add snakes themselves in some container :O
 	h_l = snake_l.getHead();
 	h_r = snake_r.getHead();
-	
-	if(snake_l.isColliding(h_r)){alert("Player Left won!");cleanup();}
-	if(snake_r.isColliding(h_l)){alert("Player Right won!");cleanup();}
+	//head colliding with enemy's body
+	if(snake_l.isCollidingBody(h_r)){alert("Player Left won!");cleanup();}
+	if(snake_r.isCollidingBody(h_l)){alert("Player Right won!");cleanup();}
+	//head colliding with own body
+	if(snake_l.isCollidingBody(h_l)){alert("Player Right won! Dont hit yourself lol");cleanup();}
+	if(snake_r.isCollidingBody(h_r)){alert("Player Left won! lol u suck RIGHT");cleanup();}
+	//heads colliding
+	if(snake_r.isCollidingHead(h_l) || snake_l.isCollidingHead(h_r)){alert("Both players lost!");cleanup();}
+	//out of bounds
 	if(h_l.x < 0 || h_l.y < 0 || h_l.x > WINDOW_SIZE || h_l.y > WINDOW_SIZE){alert("Player Left won! Don’t hit things");cleanup();} 
 	if(h_r.x < 0 || h_r.y < 0 || h_r.x > WINDOW_SIZE || h_r.y > WINDOW_SIZE){alert("Player Right won! LOL");cleanup();} 
 
@@ -181,16 +188,18 @@ function tickDelegate(e) {
 			snake_r.addBodypart();
 			score_r++;
 			score_r_text.text = "RIGHT: " + score_r;
+			score_r_text.x = WINDOW_SIZE-(blockLength+score_r_text.getMeasuredWidth());
 		}		
 	}
 	
 	stage.update();
 }
 
-function start() {
-	initSize();
-	initCreateJs();
-	
+function initMainMenu() {
+	buildMainMenu();
+}
+
+function initGame() {
 	initSnakeVariables();
 	
 	snake_l = new Snake(snakeInfos_l);
@@ -200,7 +209,10 @@ function start() {
 	stage.addChild(snake_r.container);
 	stage.addChild(food);
 	
-	score_r_text.x = 250;
+	score_l_text.x = blockLength;
+	score_l_text.y = blockLength;
+	score_r_text.y = blockLength;
+	score_r_text.x = WINDOW_SIZE-(blockLength+score_r_text.getMeasuredWidth());
 	stage.addChild(score_l_text);
 	stage.addChild(score_r_text);
 	
@@ -210,6 +222,13 @@ function start() {
 	
 	addFood();
 	addFood();
+}
+
+function start() {
+	initSize();
+	initCreateJs();
+	//initMainMenu();
+	initGame();
 }
 
 //TODO

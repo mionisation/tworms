@@ -13,15 +13,14 @@ function Snake(args) {
 	h.graphics.beginFill(this.colors[1]).rect(0, 0, blockLength, blockLength);
 	h.x = args.position[0];
 	h.y = args.position[1];
-	
+	this.size = args.size;
 	this.container.addChild(h);
-	
 }
 
 Snake.prototype.addBodypart = function() {
 	//create new block for body part
 	var body = new createjs.Shape();
-    body.graphics.beginFill(this.colors[0]).rect(0, 0, blockLength, blockLength);
+    body.graphics.setStrokeStyle(blockLength/50, "square", "bevel").beginStroke("purple").beginFill(this.colors[0]).rect(0, 0, blockLength, blockLength);
 
 	//init body parts on coords of last member
 	var numCh = this.container.numChildren;
@@ -73,16 +72,23 @@ Snake.prototype.getHead = function() {
 	return this.container.getChildAt(0);
 }
 
-Snake.prototype.isColliding = function(shape) {
-	for(var i = 0; i<this.container.numChildren; i++) {
+Snake.prototype.isCollidingBody = function(shape) {
+	for(var i = 1; i<this.container.numChildren; i++) {
 		var cur = this.container.getChildAt(i);
 		if(shape.x == cur.x && shape.y == cur.y) {return true;}
 	}
 	return false;
 }
 
+Snake.prototype.isCollidingHead = function(shape) {
+	var cur = this.container.getChildAt(0);
+	if(shape.x == cur.x && shape.y == cur.y) {return true;}
+	else{return false;}
+}
+
 Snake.prototype.keydownhandler = function(e) {
     //TODO only register a pressed key ONCE per frame
+	
 	switch (e.keyCode) {
 		//press left key
         case this.keys[1]:
