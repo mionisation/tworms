@@ -7,6 +7,7 @@
  var title_height;
  var textContainer = new createjs.Container();
  var button_play;
+ var button_countPlayers;
  
  function buildMainMenu() {
 	menu = new createjs.Stage("game");
@@ -21,23 +22,57 @@
 
 }
 function buildMenuButtons() {
+	
 	button_play = new createjs.Shape();
+	var menuButtonWidth = (2/3)*title_width;
+	var menuButtonFontSize = getMaxFontSize(menuButtonWidth);
+	button_countPlayers = new createjs.Container();
+	var button_countPlayers_bG = new createjs.Shape();
+	var	button_countPlayers_TextOne = new createjs.Text("1 Player","80px Arial Black", "#000");
+	
+	button_countPlayers_TextOne.maxWidth = 2/3*title_width;
 	var button_options = new createjs.Shape();
 	
 	button_play.graphics.beginFill("#FFF9D5").drawRoundRect(WINDOW_SIZE, (1/3)*title_height+WINDOW_SIZE/2 - title_height, (2/3)*title_width, (2/3)*title_height, 0);
+	button_countPlayers_bG.graphics.beginFill("blue").drawRoundRect(0, 0, (2/3)*title_width, (2/3)*title_height, 0);
+
 	button_options.graphics.beginFill("#FFF9D5").drawRoundRect(-(2/3)*title_width,  (1/3)*title_height+WINDOW_SIZE/2, (2/3)*title_width, (2/3)*title_height, 0);
 	
+	button_countPlayers.addChild(button_countPlayers_bG);
+	button_countPlayers.addChild(button_countPlayers_TextOne);
+	button_countPlayers.x = WINDOW_SIZE;
+	button_countPlayers.y = (1/3)*title_height+WINDOW_SIZE/2 - title_height;
+	
 	menu.addChild(button_play);
+	menu.addChild(button_countPlayers);
 	menu.addChild(button_options);
 
 	createjs.Tween.get(button_play, { loop: false }).wait(2200).to({x: -WINDOW_SIZE/3, y: 0}, 1000, createjs.Ease.getPowInOut(8));
 	createjs.Tween.get(button_options, { loop: false }).wait(2200).to({x: WINDOW_SIZE/3, y: 0}, 1000, createjs.Ease.getPowInOut(8));
 	
 	button_options.addEventListener("click", clickOptionButton);
+	button_countPlayers.addEventListener("click", clickCountPlayersButton);
 	button_play.addEventListener("click", clickPlayButton);
 }
 
+function getMaxFontSize(maxW) {
+	var textS = 0;
+	var title_shadow = new createjs.Shadow("#000000", 5, 5, 10);
+	var title_top = new createjs.Text("TWORMS", textS +"px Arial Black", "#FFF");
+	while(title_top.getBounds().width < WINDOW_SIZE/2) {
+			textS += 2;
+			title_top = new createjs.Text("TWO", textS +"px Arial Black", "#FB0");
+			title_top.y = 0;
+			title_top.x = 0;		
+
+	}
+}
+
 function clickPlayButton(e) {
+	createjs.Tween.get(button_countPlayers, { loop: false }).to({x: 2*WINDOW_SIZE/3, y: (1/3)*title_height+WINDOW_SIZE/2 - title_height}, 500, createjs.Ease.getPowInOut(8));
+}
+
+function clickCountPlayersButton(e) {
 	//createjs.Tween.get(button_play, { loop: false }).to({x: -10, y: 0}, 1000, createjs.Ease.getPowInOut(4));
 }
 
@@ -57,7 +92,7 @@ function clickOptionButton(e) {
 			textContainer.removeChildAt(i);
 		}
 	}
-	while(textContainer.numChildren < 80) {
+	while(textContainer.numChildren < 50) {
 		textContainer.addChild(getBackgroundTitle());
 	}
  }
@@ -97,7 +132,7 @@ function clickOptionButton(e) {
  function buildLotsaTitles() {
 	 textContainer = new createjs.Container();
 		
-	 for(var i = 0; i < 80; i++) {
+	 for(var i = 0; i < 50; i++) {
 		 var little = getBackgroundTitle(Math.random()*WINDOW_SIZE);
 		 textContainer.addChild(little);
 	 } 
@@ -107,7 +142,7 @@ function clickOptionButton(e) {
  function getBackgroundTitle(xc) {
 	 var color = '#' + Math.random().toString(16).substring(2, 8);
 	 var little_shadow = new createjs.Shadow(color, 0, 0, 25);
-	 var little = new createjs.Text("TWORMS", (WINDOW_SIZE/20) + Math.random()*(WINDOW_SIZE/10)+"px Arial Black", color);
+	 var little = new createjs.Text("TWORMS", (WINDOW_SIZE/20) + Math.ceil(Math.random()*(WINDOW_SIZE/10))+"px Arial Black", color);
 	 if(xc == undefined) {
 		 xc = -1* little.getBounds().width;
 	 } else {
