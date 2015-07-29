@@ -39,8 +39,8 @@ SCORES
 var score_l = 0;
 var score_r = 0;
 
-var score_l_text = new createjs.Text("LEFT: 0", "20px Arial", "#ff7700");
-var score_r_text = new createjs.Text("RIGHT: 0", "20px Arial", "#ff7700");
+var score_l_text = new createjs.Text("LEFT: 0", "30px Impact", "#ff7700");
+var score_r_text = new createjs.Text("RIGHT: 0", "30px Impact", "#ff7700");
 
 /*****************
 SNAKE INFORMATIONS BEGIN
@@ -170,8 +170,8 @@ function tickDelegate(e) {
 	//heads colliding
 	if(snake_r.isCollidingHead(h_l) || snake_l.isCollidingHead(h_r)){alert("Both players lost!");cleanup();}
 	//out of bounds
-	if(h_l.x < 0 || h_l.y < 0 || h_l.x > WINDOW_SIZE || h_l.y > WINDOW_SIZE){alert("Player Left won! Don’t hit things");cleanup();} 
-	if(h_r.x < 0 || h_r.y < 0 || h_r.x > WINDOW_SIZE || h_r.y > WINDOW_SIZE){alert("Player Right won! LOL");cleanup();} 
+	if(h_l.x < 0 || h_l.y < 0 || h_l.x > WINDOW_SIZE || h_l.y > WINDOW_SIZE){alert("Player Right won! Don’t hit things");cleanup();} 
+	if(h_r.x < 0 || h_r.y < 0 || h_r.x > WINDOW_SIZE || h_r.y > WINDOW_SIZE){alert("Player Left won! LOL");cleanup();} 
 
 	for(var i = 0; i < food.numChildren;i++) {
 		var cur = food.getChildAt(i);
@@ -227,8 +227,8 @@ function initGame() {
 function start() {
 	initSize();
 	initCreateJs();
-	//initMainMenu();
-	initGame();
+	initMainMenu();
+	//initGame();
 }
 
 //TODO
