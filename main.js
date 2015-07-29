@@ -227,10 +227,10 @@ function initGame() {
 function start() {
 	initSize();
 	initCreateJs();
-	//buildShittyRects();
-	//initMainMenu();
+	buildShittyRects();
+	initMainMenu();
 
-	initGame();
+	//initGame();
 }
 
 //TODO

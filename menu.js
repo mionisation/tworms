@@ -3,7 +3,11 @@
  * @email michael.antonius.ion@gmail.com
  */
  
+ var title_width;
+ var title_height;
  var textContainer = new createjs.Container();
+ var button_play;
+ 
  function buildMainMenu() {
 	menu = new createjs.Stage("game");
 	createjs.Ticker.framerate = 60;
@@ -12,7 +16,33 @@
 	buildLotsaTitles();
 	buildBigAssTitles();
 	
+	buildMenuButtons();
+	buildBackgroundCandy();
 
+}
+function buildMenuButtons() {
+	button_play = new createjs.Shape();
+	var button_options = new createjs.Shape();
+	
+	button_play.graphics.beginFill("#FFF9D5").drawRoundRect(WINDOW_SIZE, (1/3)*title_height+WINDOW_SIZE/2 - title_height, (2/3)*title_width, (2/3)*title_height, 0);
+	button_options.graphics.beginFill("#FFF9D5").drawRoundRect(-(2/3)*title_width,  (1/3)*title_height+WINDOW_SIZE/2, (2/3)*title_width, (2/3)*title_height, 0);
+	
+	menu.addChild(button_play);
+	menu.addChild(button_options);
+
+	createjs.Tween.get(button_play, { loop: false }).wait(2200).to({x: -WINDOW_SIZE/3, y: 0}, 1000, createjs.Ease.getPowInOut(8));
+	createjs.Tween.get(button_options, { loop: false }).wait(2200).to({x: WINDOW_SIZE/3, y: 0}, 1000, createjs.Ease.getPowInOut(8));
+	
+	button_options.addEventListener("click", clickOptionButton);
+	button_play.addEventListener("click", clickPlayButton);
+}
+
+function clickPlayButton(e) {
+	//createjs.Tween.get(button_play, { loop: false }).to({x: -10, y: 0}, 1000, createjs.Ease.getPowInOut(4));
+}
+
+function clickOptionButton(e) {
+	//createjs.Tween.get(button_play, { loop: false }).to({x: -10, y: 0}, 1000, createjs.Ease.getPowInOut(4));
 }
  
  function updateMenu(event) {
@@ -37,19 +67,30 @@
 	var title_shadow = new createjs.Shadow("#000000", 5, 5, 10);
 	var title_top = new createjs.Text("TWORMS", textS +"px Arial Black", "#FFF");
 	while(title_top.getBounds().width < WINDOW_SIZE/2) {
-			title_top = new createjs.Text("TWO", textS +"px Arial Black", "#FB0");
-			title_top.shadow = title_shadow;
-			title_top.y = title_top.x = WINDOW_SIZE/4;		
 			textS += 2;
+			title_top = new createjs.Text("TWO", textS +"px Arial Black", "#FB0");
+			title_top.y = 0;
+			title_top.x = 0;		
+
 	}
+	title_top.shadow = title_shadow;
+
 	var title_bottom = new createjs.Text("RMS", textS +"px Arial Black", "#F70");
-	title_bottom.x = WINDOW_SIZE/4;
+	
+	title_height = title_top.getBounds().height;
+	title_width = title_top.getBounds().width;
+	
+	title_top.y = -title_height/2 + WINDOW_SIZE/2;
+
 	title_bottom.shadow = title_shadow;
-	title_bottom.y = (title_top.getBounds().height) + WINDOW_SIZE/4;
+	title_bottom.y = -title_height/2 + WINDOW_SIZE/2;
+	title_bottom.x = WINDOW_SIZE/2;
+
+	
 	menu.addChild(title_top);
 	menu.addChild(title_bottom);
-	createjs.Tween.get(title_top, { loop: false }).wait(700).to({ x: 0 }, 1000, createjs.Ease.getPowInOut(4)).to({ y: WINDOW_SIZE/3 }, 1000, createjs.Ease.getPowInOut(4));
-	createjs.Tween.get(title_bottom, { loop: false }).wait(700).to({ x: WINDOW_SIZE/2 }, 1000, createjs.Ease.getPowInOut(4)).to({ y: WINDOW_SIZE/3}, 1000, createjs.Ease.getPowInOut(4));
+	createjs.Tween.get(title_top, { loop: false }).wait(2000).to({ y: -title_height + WINDOW_SIZE/2 }, 1000, createjs.Ease.getPowInOut(4));
+	createjs.Tween.get(title_bottom, { loop: false }).wait(2000).to({ y: WINDOW_SIZE/2 }, 1000, createjs.Ease.getPowInOut(4));
 	
  }
  
