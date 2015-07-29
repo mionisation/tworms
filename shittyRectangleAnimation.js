@@ -7,7 +7,7 @@
  var numRects = 20;
  var rectIter = 0;
  function buildShittyRects() {
-	 createjs.Ticker.framerate = 10;
+	 createjs.Ticker.framerate = 60;
 	 createjs.Ticker.addEventListener("tick", moverHandle);
 	 rect_c = new createjs.Container();
 	 for (var i = 0; i < numRects; i++) {
