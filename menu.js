@@ -3,11 +3,35 @@
  * @email michael.antonius.ion@gmail.com
  */
  
+ /**
+ * MENU INFORMATIONS
+ */
+ 
+// SIZES
  var title_width;
  var title_height;
- var textContainer = new createjs.Container();
+
+ //MENU BUTTON CONTAINERS
  var button_play;
+ var button_options;
  var button_countPlayers;
+ 
+ var button_countPlayers_1P;
+ var button_countPlayers_2P;
+ var button_countPlayers_3P;
+ var button_countPlayers_4P; 
+ 
+/* do i need this shit really
+ //MENU BUTTON PLAY PARTS
+ var text_countPlayers_1P;
+ var text_countPlayers_2P;
+ var text_countPlayers_3P;
+ var text_countPlayers_4P; 
+ */
+ 
+ //BACKGROUND ANIMATION
+ var textContainer = new createjs.Container();
+
  
  function buildMainMenu() {
 	menu = new createjs.Stage("game");
@@ -18,20 +42,18 @@
 	buildBigAssTitles();
 	
 	buildMenuButtons();
-	buildBackgroundCandy();
+	buildRectPointer();
 
 }
 function buildMenuButtons() {
 	
 	button_play = new createjs.Shape();
 	var menuButtonWidth = (2/3)*title_width;
-	var menuButtonFontSize = getMaxFontSize(menuButtonWidth);
 	button_countPlayers = new createjs.Container();
 	var button_countPlayers_bG = new createjs.Shape();
-	var	button_countPlayers_TextOne = new createjs.Text("1 Player","80px Arial Black", "#000");
-	
-	button_countPlayers_TextOne.maxWidth = 2/3*title_width;
-	var button_options = new createjs.Shape();
+	var	button_countPlayers_TextOne = new createjs.Text("1 Player",getMaxFontSize("1 Player", menuButtonWidth)+"px Arial Black", "#000");
+
+	button_options = new createjs.Shape();
 	
 	button_play.graphics.beginFill("#FFF9D5").drawRoundRect(WINDOW_SIZE, (1/3)*title_height+WINDOW_SIZE/2 - title_height, (2/3)*title_width, (2/3)*title_height, 0);
 	button_countPlayers_bG.graphics.beginFill("blue").drawRoundRect(0, 0, (2/3)*title_width, (2/3)*title_height, 0);
@@ -55,17 +77,14 @@ function buildMenuButtons() {
 	button_play.addEventListener("click", clickPlayButton);
 }
 
-function getMaxFontSize(maxW) {
-	var textS = 0;
-	var title_shadow = new createjs.Shadow("#000000", 5, 5, 10);
-	var title_top = new createjs.Text("TWORMS", textS +"px Arial Black", "#FFF");
-	while(title_top.getBounds().width < WINDOW_SIZE/2) {
-			textS += 2;
-			title_top = new createjs.Text("TWO", textS +"px Arial Black", "#FB0");
-			title_top.y = 0;
-			title_top.x = 0;		
-
+function getMaxFontSize(text, maxW) {
+	var s = 1;
+	for(;;) {
+		t = new createjs.Text(text, s +"px Arial Black", "#FB0");
+		if(t.getBounds().width > maxW) {return s;}
+		s += 1;
 	}
+	return s;
 }
 
 function clickPlayButton(e) {
@@ -165,6 +184,6 @@ function clickOptionButton(e) {
     return "rgb(" + mixedrgb.join(",") + ")";
   }
  
- function buildBackgroundCandy() {
+ function buildRectPointer() {
 	 
  }
